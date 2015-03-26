@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Login</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+</head>
+<script>
+function create(uname, pword){
+  console.log("here!");
+  var ref = new Firebase("https://crackling-inferno-5412.firebaseio.com");
+  ref.createUser({
+  email    : uname,
+  password : pword
+}, function(error, userData) {
+  if (error) {
+    console.log("Error creating user:", error);
+  } else {
+    console.log("Successfully created user account with uid:", userData.uid);
+  }});
+}
+
+</script>
+
+<body>
+
+  <html lang="en-US">
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Create User Token</title>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+
+  </head>
+
+  <body>
+    <div class="container">
+    	
+      <div id="login">
+
+        <form action="{% url 'created' %}" method="get">
+
+          <fieldset class="clearfix">
+
+            <p><span class="fontawesome-user"></span><input id="uname" name="uname" type="text" value="Username" onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
+            <p><span class="fontawesome-lock"></span><input id="pword" name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+            <p><input type="submit" value="Create" onclick="create(uname, pword);"></p>
+
+          </fieldset>
+
+        </form>
+      </div> <!-- end login -->
+      <div class="error_msg">
+
+ 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      </div>
+     
+    </div>
+
+  </body>
+</html>
+
+</body>
+
+</html>

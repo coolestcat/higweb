@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Login</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+</head>
+
+<body>
+
+  <html lang="en-US">
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Login</title>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+
+  </head>
+
+  <body>
+    <div class="container">
+    	
+      <div id="login">
+        <div class="logo">
+        <img style="height:auto; width:auto; max-width:300px; max-height:300px;" src="{% static 'web/muhc.gif' %}" alt="MUHC">
+        </div>
+        <form action="{% url 'login' %}" method="get">
+
+          <fieldset class="clearfix">
+
+            <p><span class="fontawesome-user"></span><input name="uname" type="text" value="Username" onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
+            <p><span class="fontawesome-lock"></span><input name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+            <p><input type="submit" value="Sign In"></p>
+
+          </fieldset>
+
+        </form>
+      </div> <!-- end login -->
+      <div class="error_msg">
+
+ 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      </div>
+     
+    </div>
+
+  </body>
+</html>
+
+</body>
+
+</html>

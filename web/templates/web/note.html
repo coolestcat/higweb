@@ -1,0 +1,98 @@
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Notes</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+
+</head>
+
+
+<body>
+
+  <html lang="en-US">
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Notes</title>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+
+  </head>
+
+  <body>
+    <div class="container">
+    	
+      <div id="login">
+       
+        <!--<form action="" method="get">-->
+
+          <fieldset class="clearfix">
+            <p><span class="fontawesome-user"></span><input id="note" name="note" type="text" value="Text" onBlur="if(this.value == '') this.value = 'Text'" onFocus="if(this.value == 'Text') this.value = ''" required></p> 
+
+            <p><input type="submit" value="Submit" onclick="saveNote()"></p>
+
+          <script type="text/javascript">
+
+		  function saveNote(){
+		  	var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+		  	var myTextField = document.getElementById('note').value;
+		  	var notesRef = myFirebaseRef.child("notes");
+		  	var paramsRef = myFirebaseRef.child("params");
+		  	noteString = "note";
+
+		  	paramsRef.child("num").once("value", function(data){
+		  		if (data.val()==null){
+		  			var newString = noteString + "0";
+				  	var newNoteRef = notesRef.child(newString);
+				  	newNoteRef.set({
+				  		noteText: myTextField
+				  	});
+  					paramsRef.set({
+  						num: 0
+  					});
+		  		}
+		  		else{
+  					var newNum = data.val() + 1;
+  					paramsRef.set({
+  						num: newNum
+  					})
+  					var newString = noteString + newNum;
+				  	var newNoteRef = notesRef.child(newString);
+				  	newNoteRef.set({
+				  		noteText: myTextField
+				  	});
+		  		}
+		  	});
+			myFirebaseRef.child("notes/note0/noteText").once("value", function(data) {
+  				alert("0: " + data.val());  
+			});
+			myFirebaseRef.child("notes/note1/noteText").once("value", function(data) {
+  				alert("1: " + data.val());  
+			});
+		  }
+  		</script> 
+
+          </fieldset>
+
+       <!--</form>-->
+      </div> <!-- end login -->
+      <div class="error_msg">
+ 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      </div>
+     
+    </div>
+
+  </body>
+</html>
+
+</body>
+
+</html>
