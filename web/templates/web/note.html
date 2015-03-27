@@ -55,15 +55,11 @@
 				  	newNoteRef.set({
 				  		noteText: myTextField
 				  	});
-  					paramsRef.set({
-  						num: 0
-  					});
+  					paramsRef.child("num").set(0);
 		  		}
 		  		else{
   					var newNum = data.val() + 1;
-  					paramsRef.set({
-  						num: newNum
-  					})
+  					paramsRef.child("num").set(newNum);
   					var newString = noteString + newNum;
 				  	var newNoteRef = notesRef.child(newString);
 				  	newNoteRef.set({

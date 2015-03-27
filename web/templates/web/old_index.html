@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Login</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+  <html lang="en-US">
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Login</title>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+
+  </head>
+
+  <body>
+    <div class="container">
+    	
+      <div id="login">
+        <div class="logo">
+        <img style="height:auto; width:auto; max-width:300px; max-height:300px;" src="{% static 'web/muhc.gif' %}" alt="MUHC">
+        </div>
+        <script type="text/javascript">
+          function authenticate(){
+            alert("heree!");
+            var uname = document.getElementById('uname').value;
+            var pword = document.getElementById('pword').value;
+
+            var done = 0;
+            var ref = new Firebase("https://crackling-inferno-5412.firebaseio.com");
+            ref.authWithPassword({
+              email    : uname,
+              password : pword
+            }, function(error, authData) {
+              if (error) {
+                alert("Login Failed!");
+              } else {
+                alert("Login Succeded!");
+
+                console.log("Authenticated successfully with payload:", authData);
+              }
+            });
+          }
+
+        </script> 
+
+        <form id="loginform" action="{% url 'login' %}" method="get">
+
+          <fieldset class="clearfix">
+
+            <p><span class="fontawesome-user"></span><input id="uname" name="uname" type="text" value="Username" onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
+            <p><span class="fontawesome-lock"></span><input id="pword" name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+            <p><input style="display:none" id="userid" name="userid" type="password"  value="userid" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+            <p><input type="button" value="Sign In" onclick="authenticate();"></p>
+
+            <script type="text/javascript">
+            
+            function changeUserID(){
+                  var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com");
+                  t = 0;
+                  myFirebaseRef.child("notes/note0/noteText").once("value", function(data) {
+                      alert("0: " + data.val());  
+                      t = 1;
+                  });
+                  while(t==0){
+
+                  }
+                  var uname = document.getElementById('uname').value;
+                  var uSplit = uname.split(".");
+                  var unameRef = uSplit[0];
+
+                  var thisUserRef = myFirebaseRef.child("users").child(unameRef);
+                  alert(unameRef);
+                  var paramsRef = myFirebaseRef.child("params");
+                  paramsRef.child("num").once("value", function(data){
+                    alert(data.val());
+                  });
+
+                  thisUserRef.child("userid").once("value", function(data){
+                    var s = document.getElementById('userid');
+                    s.value = data.val();
+                    alert(data.val());
+                    alert("svalue: " + s.value);
+                  }, function(errorObject){
+                     alert("The read failed: " + errorObject.code);
+                  });
+                  while (document.getElementById('userid').value=="userid"){
+
+                  }
+            }
+            
+            </script>
+          </fieldset>
+
+        </form>
+      </div> <!-- end login -->
+      <div class="error_msg">
+
+ 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      </div>
+     
+    </div>
+
+  </body>
+</html>
+
+</body>
+
+</html>

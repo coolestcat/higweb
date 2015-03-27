@@ -10,24 +10,9 @@
 
   <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
 
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+
 </head>
-<script>
-function create(uname, pword){
-  console.log("here!");
-  var ref = new Firebase("https://crackling-inferno-5412.firebaseio.com");
-  ref.createUser({
-  email    : uname,
-  password : pword
-}, function(error, userData) {
-  if (error) {
-    console.log("Error creating user:", error);
-  } else {
-    console.log("Successfully created user account with uid:", userData.uid);
-  }});
-}
-
-</script>
-
 <body>
 
   <html lang="en-US">
@@ -46,17 +31,64 @@ function create(uname, pword){
     	
       <div id="login">
 
-        <form action="{% url 'created' %}" method="get">
+        <!-- <form action="{% url 'created' %}" method="get"> -->
 
           <fieldset class="clearfix">
 
             <p><span class="fontawesome-user"></span><input id="uname" name="uname" type="text" value="Username" onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
+
+            <p><span class="fontawesome-user"></span><input id="userid" name="userid" type="text" value="Text" onBlur="if(this.value == '') this.value = 'Text'" onFocus="if(this.value == 'Text') this.value = ''" required></p> 
+
             <p><span class="fontawesome-lock"></span><input id="pword" name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-            <p><input type="submit" value="Create" onclick="create(uname, pword);"></p>
+            <p><input type="submit" value="Create" onclick="create();"></p>
+
+             <script type="text/javascript">
+              function create(){
+                alert("here!");
+                var ref = new Firebase("https://crackling-inferno-5412.firebaseio.com");
+                var paramsRef = ref.child("params");
+                var uname = document.getElementById('uname').value;
+                var pword = document.getElementById('pword').value;
+                var uid = document.getElementById('userid').value;
+
+                ref.createUser({
+                email    : uname,
+                password : pword
+                }, function(error, userData) {
+                if (error) {
+                  alert("Error creating user : " + error);
+                } else {
+                  alert("Successfully created user account with uid : " + uname);
+                }});
+
+                var userRef = ref.child("users");
+                var uSplit = uname.split(".");
+                var unameRef = uSplit[0];
+
+                paramsRef.child("userNum").once("value", function(data){
+                  if (data.val()==null){
+                    var newUserRef = userRef.child(unameRef);
+                    newUserRef.set({
+                      userid: uid
+                    });
+                    paramsRef.child("userNum").set(0);
+                  }
+                  else{
+                    var newNum = data.val() + 1;
+                    paramsRef.child("userNum").set(newNum);
+                    var newUserRef = userRef.child(unameRef);
+                    newUserRef.set({
+                      userid: uid
+                    });
+                  }
+                });
+
+              }
+            </script> 
 
           </fieldset>
 
-        </form>
+       <!--  </form> -->
       </div> <!-- end login -->
       <div class="error_msg">
 

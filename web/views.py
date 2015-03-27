@@ -115,7 +115,7 @@ def login(request):
 	# return render(request, 'web/index.html', {
     #   'error_message': error_str,
     # })
-    this_user = request.GET['uname']
+    this_user = request.GET['userid']
     ID = int(this_user)
 
     try:
@@ -133,10 +133,10 @@ def create(request):
     })
 
 def created(request):
-	# this_user = request.GET['uname']
-	# this_password = request.GET['pword']
+	this_user = request.GET['uname']
+	this_password = request.GET['pword']
 
-	# auth_payload = {"uid": str(this_user), "pass": this_password}
+	# auth_payload = {"uid": this_user, "pass": this_password}
 	# token = create_token("VSzXP3WjD5XeQbBUtdjMxEWvUHU6yqyduBxjciM8", auth_payload)
 
 	return render(request, 'web/create_index.html', {

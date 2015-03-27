@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 {% load staticfiles %}
 <html>
 
@@ -10,7 +9,11 @@
 
   <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
 
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
 </head>
+
 
 <body>
 
@@ -19,7 +22,7 @@
 
     <meta charset="utf-8">
 
-    <title>Login</title>
+    <title>Notes</title>
 
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
 
@@ -27,26 +30,81 @@
 
   <body>
     <div class="container">
-    	
+      
       <div id="login">
-        <div class="logo">
-        <img style="height:auto; width:auto; max-width:300px; max-height:300px;" src="{% static 'web/muhc.gif' %}" alt="MUHC">
-        </div>
-        <form action="{% url 'login' %}" method="get">
 
           <fieldset class="clearfix">
 
-            <p><span class="fontawesome-user"></span><input name="uname" type="text" value="Username" onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
-            <p><span class="fontawesome-lock"></span><input name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-            <p><input type="submit" value="Sign In"></p>
+            <p><input style="display:none" id="userid" name="userid" type="password"  value="userid" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+
+            <p><span class="fontawesome-user"></span><input id="note" name="note" type="text" value="Text" onBlur="if(this.value == '') this.value = 'Text'" onFocus="if(this.value == 'Text') this.value = ''" required></p> 
+
+            <p><span class="fontawesome-lock"></span><input id="pword" name="pword" type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
+
+            <p><input type="submit" value="Submit" onclick="saveNote(); authenticate();"></p>
+
+          <script type="text/javascript">
+
+      var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+      function saveNote(){
+        
+        var myTextField = document.getElementById('note').value;
+        var notesRef = myFirebaseRef.child("notes");
+        var paramsRef = myFirebaseRef.child("params");
+
+        var uname = document.getElementById('note').value;
+        var uSplit = uname.split(".");
+        var unameRef = uSplit[0];
+
+        alert(unameRef);
+        var thisUserRef = myFirebaseRef.child("users").child(unameRef);
+        thisUserRef.child("userid").once("value", function(data){
+                    var s = document.getElementById('userid');
+                    s.value = data.val();
+                    alert("svalue: " + s.value);
+                  }, function(errorObject){
+                     alert("The read failed: " + errorObject.code);
+        });
+        while (document.getElementById('userid')=="userid"){
+
+        }
+      }
+
+      function authenticate(){
+        alert("heree!");
+        var uname = document.getElementById('note').value;
+        var pword = document.getElementById('pword').value;
+        
+        myFirebaseRef.authWithPassword({
+          email    : uname,
+          password : pword
+        }, function(error, authData) {
+          if (error) {
+            alert("Login Failed!");
+          } else {
+            alert("Login Succeded!");
+            var userid = document.getElementById('userid').value;
+            var str = "http://127.0.0.1:8000/web/login/?uname=" + uname + "&pword=" + pword + "&userid=" + userid;
+            console.log("Authenticated successfully with payload:", authData);
+            $(document).ready(function(){
+                alert("in function");
+                
+                //var d = $.get("{% url 'login' %}", { uname: uname, pword: pword, userid: userid});
+                //$(document).html(d);
+                window.location.replace(str);
+                alert("after get");
+            });
+           
+          }
+        });
+      }
+      </script> 
 
           </fieldset>
 
-        </form>
       </div> <!-- end login -->
       <div class="error_msg">
-
- 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
       </div>
      
     </div>
