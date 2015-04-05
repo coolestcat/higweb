@@ -8,4 +8,8 @@ urlpatterns = patterns('',
     url(r'^create/$', views.create, name='create'),
     url(r'^created/$', views.created, name='created'),
     url(r'^note/$', views.note, name='note'),
+    url(r'^response/$', views.response, name='response'),
+    url(r'^firebaseLogin/$', views.firebaseLogin, name='firebaseLogin'),
+    url(r'^setData/$', views.setData, name='setData'),
+    url(r'^home/$', views.home, name='home'),
 )

@@ -1,0 +1,32 @@
+{% load staticfiles %}
+<html>
+	<head>
+
+	  <meta charset="UTF-8">
+
+	  <title>Home</title>
+
+	  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+	  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+	  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+	</head>
+
+	<body>
+	<script type="text/javascript">
+		var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+		var stageRef = myFirebaseRef.child("data").child("stage");
+
+		stageRef.once("value", function(data){
+			document.getElementById('note').value = data.val();
+			stageRef.set("blah");
+		});
+	</script>
+	This is the page for patient {{userid}}. 
+	The current stage is: 
+  <p><span class="fontawesome-user"></span><input id="note" name="note" type="text" value="Text" onBlur="if(this.value == '') this.value = 'Text'" onFocus="if(this.value == 'Text') this.value = ''" required></p> 
+
+	</body>
+
+</html>

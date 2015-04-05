@@ -147,8 +147,34 @@ def note(request):
     return render(request, 'web/note.html', {
     })
 
+def response(request):
+    return render(request, 'web/response.html', {
+    })
 
+def firebaseLogin(request):
+    return render(request, 'web/firebaseLogin.html', {
+    })
 
+def setData(request):
+    this_user = request.GET['userid']
+    ID = int(this_user)
+
+    try:
+        thisid = int(ID)
+        st = getStage(thisid)
+
+    except ValueError:
+        raise Http404()
+
+    return render(request, 'web/setData.html', {
+        'stage' : st
+    })    
+
+def home(request):
+    this_user = request.GET['userid']
+    return render(request, 'web/home.html', {
+        'userid': this_user
+    })
 
 
 

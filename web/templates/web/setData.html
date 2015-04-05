@@ -1,0 +1,61 @@
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>setData</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
+
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+</head>
+
+
+<body>
+
+  <html lang="en-US">
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Notes</title>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
+
+  </head>
+
+  <body>
+
+   <script type="text/javascript">
+    var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+    alert("Setting Data");
+    alert("{{stage}}");
+
+    var dataRef = myFirebaseRef.child("data");
+
+    dataRef.on("value", function(snap){
+      dataRef.child("stage").set("{{stage}}");
+      $(document).ready(function(){
+          alert("in function");
+          //var d = $.get("{% url 'login' %}", { uname: uname, pword: pword, userid: userid});
+          //$(document).html(d);
+          var str = "{% url 'response' %}";
+          window.location.replace(str);
+      });
+    });
+    
+
+   </script>
+
+</body>
+
+
+</html>
+
+</body>
+
+</html>
