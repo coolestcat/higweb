@@ -1,0 +1,100 @@
+{% load staticfiles %}
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Response</title>
+
+  <!-- fullcalendar -->
+  <link rel="stylesheet" type="text/css" href="{% static 'web/fullcalendar.css' %}" />
+  <link type="text/css" rel="stylesheet" href="http://cdn.jsdelivr.net/qtip2/2.2.1/jquery.qtip.min.css" />
+  <script src="{% static 'web/moment.min.js' %}"></script>
+
+  <!-- jquery -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+  <!-- qtip jquery plugin -->
+  <script src="http://cdn.jsdelivr.net/qtip2/2.2.1/jquery.qtip.min.js"></script>
+
+  <script src="{% static 'web/fullcalendar.js' %}"></script>
+
+  <!-- firebase -->
+  <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+
+  <script type="text/javascript">
+	$(document).ready(function() {
+
+	    // page is now ready, initialize the calendar...
+      var tooltip = $('<div/>').qtip({
+        id: 'fullcalendar',
+        prerender: true,
+        content: {
+          text: ' ',
+          title: {
+            button: true
+          }
+        },
+        position: {
+          my: 'bottom center',
+          at: 'top center',
+          target: 'mouse',
+          viewport: $('#fullcalendar'),
+          adjust: {
+            mouse: false,
+            scroll: false
+          }
+        },
+        show: false,
+        hide: false,
+        style: 'qtip-light'
+      }).qtip('api');
+
+
+      var events_parsed = []
+      {% for i in events %}
+        events_parsed.push({
+            title: "{{i.0|safe}}",
+            start: "{{i.1|safe}}",
+            end: "{{i.2|safe}}",
+            description: "{{i.0|safe}}"
+        });
+      {% endfor %}
+
+	    $('#calendar').fullCalendar({
+        eventClick: function(data, event, view) {
+          var content = '<h3>'+data.title+'</h3>' + 
+            '<p><b>Event Description:</b> description <br />';
+
+          tooltip.set({
+            'content.text': content
+          })
+          .reposition(event).show(event);
+        },
+        dayClick: function() { tooltip.hide() },
+        events: events_parsed,
+        color: 'yellow',   // an option!
+        textColor: 'black' 
+	    })
+
+
+	});
+  var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+
+
+  </script>
+
+</head>
+
+
+<body>
+
+
+
+
+<div id='calendar'></div>
+
+</body>
+
+</html>

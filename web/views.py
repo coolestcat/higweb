@@ -11,6 +11,8 @@ import numpy
 from random import randint
 from datetime import datetime
 from datetime import timedelta
+from firebase import Firebase
+import json
 
 current_time = datetime(2014, 8, 6, 12, 00, 00) # for patient 3, should be between Ready for MD Contour and Prescription Doc Fast Track
 stages = ['Ct-Sim', 'READY FOR CONTOUR', 'READY FOR MD CONTOUR', 'Prescription Document (Fast Track)',
@@ -22,6 +24,54 @@ def match(st, string_array):
             return i
 
     return -1
+
+def getAppointments(id):
+    mysql_cn = MySQLdb.connect(host='localhost', port=3306,user='alvin', passwd='', db='hig')
+    query = """
+    SELECT a.AliasName, t.PatientSerNum, t.CreationDate, t.CompletionDate, t.Status
+    FROM Task t INNER JOIN Patient p ON p.PatientSerNum = t.PatientSerNum 
+        INNER JOIN Alias a ON a.AliasSerNum = t.AliasSerNum 
+    WHERE p.PatientSerNum=%s
+    UNION ALL 
+    SELECT a.AliasName, ap.PatientserNum, ap.ScheduledStartTime, ap.ScheduledEndTime, ap.Status
+    FROM Appointment ap INNER JOIN Patient p ON ap.PatientSerNum = p.PatientSerNum
+        INNER JOIN Alias a ON a.AliasSerNum = ap.AliasSerNum
+    WHERE p.PatientSerNum=%s
+    UNION ALL 
+    SELECT a.AliasName, p.PatientSerNum, p.PlanCreationDate, p.PlanCreationDate, p.Status
+    FROM Plan p INNER JOIN Patient pa ON p.PatientSerNum = pa.PatientSerNum
+        INNER JOIN Alias a ON a.AliasSerNum = p.AliasSerNum
+    WHERE pa.PatientSerNum=%s
+    UNION ALL
+    SELECT DISTINCT a.AliasName, p.PatientSerNum, t.TreatmentDateTime, p.PlanCreationDate, p.Status 
+    FROM TreatmentFieldHstry t INNER JOIN Plan p ON t.PlanSerNum = p.PlanSerNum
+    INNER JOIN Alias a ON a.AliasSerNum = p.AliasSerNum
+    INNER JOIN Patient pat ON pat.PatientSerNum = p.PatientSerNum
+    WHERE pat.PatientSerNum=%s
+    UNION ALL
+    SELECT a.AliasName, d.PatientSerNum, d.ApprovedTimeStamp, d.DateOfService, d.ApprovalStatus
+    FROM Document d INNER JOIN Patient p ON d.PatientSerNum = p.PatientSerNum
+        INNER JOIN Alias a on d.AliasSerNum = a.AliasSerNum
+    WHERE p.PatientSerNum=%s
+    ORDER BY PatientSerNum, CreationDate""" % (id,id,id,id,id)
+    df = pd.read_sql(query, con=mysql_cn) 
+    events = []
+
+    i=0 
+    while (i<len(df)):
+        time = datetime.strptime(str(df.iloc[i,2]),"%Y-%m-%d %H:%M:%S")
+        if (time < current_time):
+            arr = []
+            arr.append(str(df.iloc[i,0]))
+            arr.append(str(df.iloc[i,2]))
+            if (i+1<len(df)):
+                arr.append(str(df.iloc[i+1,2]))
+            else:
+                arr.append(str(df.iloc[i,3]))
+            events.append(arr)
+        i+=1
+
+    return events
 
 def getStage(id):
     st = "default"
@@ -175,6 +225,18 @@ def home(request):
     return render(request, 'web/home.html', {
         'userid': this_user
     })
+
+def calendar(request):
+    # f = Firebase('https://crackling-inferno-5412.firebaseio.com/')
+    # f.push({'test': 'ahh', 'text': 'Hello'})
+    this_user = request.GET['userid']
+    events = getAppointments(this_user)
+    # json_list = json.dumps(events)
+    json_list = events
+    return render(request, 'web/calendar.html', {
+        'events': json_list
+    })
+
 
 
 

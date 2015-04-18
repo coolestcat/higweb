@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^firebaseLogin/$', views.firebaseLogin, name='firebaseLogin'),
     url(r'^setData/$', views.setData, name='setData'),
     url(r'^home/$', views.home, name='home'),
+	url(r'^calendar/$', views.calendar, name='calendar'),
 )
