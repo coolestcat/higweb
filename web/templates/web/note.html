@@ -10,6 +10,57 @@
   <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}" />
 
   <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+  <style type="text/css">
+  *{
+    margin:0;
+    padding:0;
+  }
+  body{
+    font-family:arial,sans-serif;
+    font-size:100%;
+    margin:3em;
+    background:#666;
+    color:#fff;
+  }
+  h2,p{
+    font-size:100%;
+    font-weight:normal;
+  }
+  ul,li{
+    list-style:none;
+  }
+  ul{
+    overflow:hidden;
+    padding:3em;
+  }
+  ul li{
+    margin:1em;
+    float:left;
+  }
+  ul li a{
+    text-decoration:none;
+    color:#000;
+    background:#ffc;
+    display:block;
+    height:10em;
+    width:10em;
+    padding:1em;
+    -moz-box-shadow:5px 5px 7px rgba(33,33,33,1);
+    -webkit-box-shadow: 5px 5px 7px rgba(33,33,33,.7);
+    box-shadow: 5px 5px 7px rgba(33,33,33,.7);
+  }
+  ul li h2{
+    font-size:140%;
+    font-weight:bold;
+    padding-bottom:10px;
+  }
+  ul li p{
+    font-size:180%;
+  }
+  ol{text-align:center;}
+  ol li{display:inline;padding-right:1em;}
+  ol li a{color:#fff;}
+  </style>
 
 </head>
 
@@ -25,15 +76,38 @@
 
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
 
+    <!-- jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
   </head>
 
   <body>
+   <script type="text/javascript">
+     $(document).ready(function() {
+        var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+        var notesRef = myFirebaseRef.child("notes");
+        var list = document.getElementById('stickies');
+
+
+        notesRef.on("value", function(dataSnapshot){
+          var list = document.getElementById('stickies');
+          $('ul').empty();
+          //alert("value changed!");
+          dataSnapshot.forEach(function(data) {
+            //alert(data.val()['noteText']);
+            var toAdd = data.val()['noteText'];
+            var entry = document.createElement('li');
+            entry.appendChild(document.createTextNode(String(toAdd)));
+            list.appendChild(entry);
+          });
+        });
+      });
+   </script>
     <div class="container">
     	
       <div id="login">
        
         <!--<form action="" method="get">-->
-
           <fieldset class="clearfix">
             <p><span class="fontawesome-user"></span><input id="note" name="note" type="text" value="Text" onBlur="if(this.value == '') this.value = 'Text'" onFocus="if(this.value == 'Text') this.value = ''" required></p> 
 
@@ -41,44 +115,47 @@
 
           <script type="text/javascript">
 
-		  function saveNote(){
-		  	var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
-		  	var myTextField = document.getElementById('note').value;
-		  	var notesRef = myFirebaseRef.child("notes");
-		  	var paramsRef = myFirebaseRef.child("params");
-		  	noteString = "note";
+    		  function saveNote(){
+    		  	var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
+    		  	var myTextField = document.getElementById('note').value;
+    		  	var notesRef = myFirebaseRef.child("notes");
+    		  	var paramsRef = myFirebaseRef.child("params");
+    		  	noteString = "note";
 
-		  	paramsRef.child("num").once("value", function(data){
-		  		if (data.val()==null){
-		  			var newString = noteString + "0";
-				  	var newNoteRef = notesRef.child(newString);
-				  	newNoteRef.set({
-				  		noteText: myTextField
-				  	});
-  					paramsRef.child("num").set(0);
-		  		}
-		  		else{
-  					var newNum = data.val() + 1;
-  					paramsRef.child("num").set(newNum);
-  					var newString = noteString + newNum;
-				  	var newNoteRef = notesRef.child(newString);
-				  	newNoteRef.set({
-				  		noteText: myTextField
-				  	});
-		  		}
-		  	});
-			myFirebaseRef.child("notes/note0/noteText").once("value", function(data) {
-  				alert("0: " + data.val());  
-			});
-			myFirebaseRef.child("notes/note1/noteText").once("value", function(data) {
-  				alert("1: " + data.val());  
-			});
-		  }
+    		  	paramsRef.child("num").once("value", function(data){
+    		  		if (data.val()==null){
+    		  			var newString = noteString + "0";
+    				  	var newNoteRef = notesRef.child(newString);
+    				  	newNoteRef.set({
+    				  		noteText: myTextField
+    				  	});
+      					paramsRef.child("num").set(0);
+    		  		}
+    		  		else{
+      					var newNum = data.val() + 1;
+      					paramsRef.child("num").set(newNum);
+      					var newString = noteString + newNum;
+    				  	var newNoteRef = notesRef.child(newString);
+    				  	newNoteRef.set({
+    				  		noteText: myTextField
+    				  	});
+    		  		}
+    		  	});
+    			myFirebaseRef.child("notes/note0/noteText").once("value", function(data) {
+      				alert("0: " + data.val());  
+    			});
+    			myFirebaseRef.child("notes/note1/noteText").once("value", function(data) {
+      				alert("1: " + data.val());  
+    			});
+    		  }
+
   		</script> 
 
           </fieldset>
 
        <!--</form>-->
+
+       <ul id="stickies"></ul>
       </div> <!-- end login -->
       <div class="error_msg">
  		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
