@@ -32,13 +32,13 @@
 
    <script type="text/javascript">
     var myFirebaseRef = new Firebase("https://crackling-inferno-5412.firebaseio.com/");
-    alert("Started Watching");
+    //alert("Started Watching");
     var setUserRef = myFirebaseRef.child("params").child("setUser");
 
     setUserRef.on("child_changed", function(snap){
-      alert("value changed!");
+      //alert("value changed!");
       $(document).ready(function(){
-          alert("in function");
+          //alert("in function");
           //var d = $.get("{% url 'login' %}", { uname: uname, pword: pword, userid: userid});
           //$(document).html(d);
           var str = "{% url 'setData' %}" + "?userid=" + snap.val();
